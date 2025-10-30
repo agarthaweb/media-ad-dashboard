@@ -67,27 +67,28 @@ export function DataVisualization() {
       {/* Impressions Chart */}
       <Card className="p-6 shadow-sm">
         <h3 className="text-xl font-semibold mb-6 text-foreground">Impressions by Publisher</h3>
-        <ResponsiveContainer width="100%" height={400}>
-          <BarChart data={impressionsData} layout="vertical" margin={{ top: 5, right: 30, left: 100, bottom: 5 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
-            <XAxis
-              type="number"
-              tick={{ fill: "#6B7280", fontSize: 12 }}
-              tickFormatter={(value) => {
-                // Format large numbers (e.g., 1.2M, 500K)
-                if (value >= 1000000) return `${(value / 1000000).toFixed(1)}M`
-                if (value >= 1000) return `${(value / 1000).toFixed(0)}K`
-                return value.toString()
-              }}
-            />
-            <YAxis dataKey="name" type="category" tick={{ fill: "#6B7280", fontSize: 12 }} width={90} />
-            <Tooltip
-              formatter={(value: number) => [value.toLocaleString(), "Impressions"]}
-              contentStyle={{ backgroundColor: "#FFFFFF", border: "1px solid #E5E7EB", borderRadius: "6px" }}
-            />
-            <Bar dataKey="value" fill="#3B82F6" radius={[0, 4, 4, 0]} />
-          </BarChart>
-        </ResponsiveContainer>
+          <ResponsiveContainer width="100%" height={400}>
+            <BarChart data={impressionsData} layout="vertical" margin={{ top: 5, right: 0, left: 0, bottom: 5 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
+              <XAxis
+                type="number"
+                domain={[0, 'dataMax']}
+                tick={{ fill: "#6B7280", fontSize: 12 }}
+                tickFormatter={(value) => {
+                  // Format large numbers (e.g., 1.2M, 500K)
+                  if (value >= 1000000) return `${(value / 1000000).toFixed(1)}M`
+                  if (value >= 1000) return `${(value / 1000).toFixed(0)}K`
+                  return value.toString()
+                }}
+              />
+              <YAxis dataKey="name" type="category" tick={{ fill: "#6B7280", fontSize: 12 }} width={90} />
+              <Tooltip
+                formatter={(value: number) => [value.toLocaleString(), "Impressions"]}
+                contentStyle={{ backgroundColor: "#FFFFFF", border: "1px solid #E5E7EB", borderRadius: "6px" }}
+              />
+              <Bar dataKey="value" fill="#3B82F6" radius={[0, 4, 4, 0]} />
+            </BarChart>
+          </ResponsiveContainer>
       </Card>
 
       {/* Spend Chart */}
@@ -121,10 +122,11 @@ export function DataVisualization() {
       <Card className="p-6 shadow-sm">
         <h3 className="text-xl font-semibold mb-6 text-foreground">CPM by Publisher</h3>
         <ResponsiveContainer width="100%" height={400}>
-          <BarChart data={cpmData} layout="vertical" margin={{ top: 5, right: 30, left: 100, bottom: 5 }}>
+          <BarChart data={cpmData} layout="vertical" margin={{ top: 5, right: 30, left: 0, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#E5E7EB" />
             <XAxis
               type="number"
+              domain={[0, 'dataMax']}
               tick={{ fill: "#6B7280", fontSize: 12 }}
               tickFormatter={(value) => `$${value}`}
             />

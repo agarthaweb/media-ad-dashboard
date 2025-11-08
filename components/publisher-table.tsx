@@ -28,10 +28,15 @@ function formatPercentage(num: number): string {
 export function PublisherTable() {
   const [sortField, setSortField] = useState<SortField>("rank")
   const [sortDirection, setSortDirection] = useState<SortDirection>("asc")
-  
-  // Get real data from store
-  const processedData = useDashboardStore(state => state.processedData)
-  const hasData = useDashboardStore(state => state.rawCSVData !== null)
+
+  // Get real data from store using selector hooks
+  const { processedData, hasData } = useDashboardStore(state => {
+    const activeDataset = state.getActiveDataset()
+    return {
+      processedData: activeDataset?.processedData || [],
+      hasData: state.datasets.length > 0
+    }
+  })
 
   const handleSort = (field: SortField) => {
     if (sortField === field) {

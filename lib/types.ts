@@ -72,12 +72,50 @@ export interface DashboardStats {
 
 /**
  * Campaign - Individual campaign for filter dropdown
- * 
+ *
  * Each unique campaign from the CSV becomes a selectable option
  */
 export interface Campaign {
   id: string    // Same as name, used as unique key
   name: string  // Display name (e.g., "CAMG | TTD | MVA/PI | Ohio | Lawrence : 4374")
+}
+
+// ============================================================================
+// MULTI-CSV DATASET TYPES
+// ============================================================================
+
+/**
+ * CSVDataset - Represents a single uploaded CSV with all its data
+ *
+ * This allows us to store multiple CSVs and compare them month-over-month
+ */
+export interface CSVDataset {
+  id: string                              // Unique identifier (e.g., "dataset_1234567890")
+  name: string                            // User-provided name (e.g., "January 2024")
+  fileName: string                        // Original file name (e.g., "jan_data.csv")
+  uploadedAt: Date                        // When this CSV was uploaded
+  rawData: RawCSVRow[]                    // Original parsed CSV data
+  processedData: ProcessedPublisherData[] // Aggregated publisher data
+  campaigns: Campaign[]                   // Available campaigns in this dataset
+  selectedCampaign: string | null         // Currently selected campaign filter
+  stats: DashboardStats                   // Calculated summary metrics
+}
+
+/**
+ * ComparisonData - Data structure for comparing multiple datasets
+ *
+ * Used when comparing 2+ datasets side-by-side
+ */
+export interface ComparisonData {
+  publisher: string                       // Publisher name
+  datasets: {
+    datasetId: string                     // Which dataset this data is from
+    datasetName: string                   // Display name of dataset
+    impressions: number
+    spend: number
+    cpm: number
+    spendPercentage: number
+  }[]
 }
 
 // ============================================================================

@@ -135,27 +135,27 @@ function validateCSVStructure(firstRow: RawCSVRow): CSVValidationError | null {
 
 /**
  * extractCampaigns - Get list of unique campaigns from CSV data
- * 
+ *
  * Looks through all rows and finds unique campaign names.
  * Used to populate the campaign filter dropdown.
- * 
+ *
  * Example:
  * Input: 100 rows with 2 different campaigns
  * Output: [{id: "Campaign A", name: "Campaign A"}, {id: "Campaign B", name: "Campaign B"}]
- * 
+ *
  * @param data - Parsed CSV rows
  * @returns Array of unique campaigns
  */
 export function extractCampaigns(data: RawCSVRow[]): Campaign[] {
   // Use Set to get unique campaign names (no duplicates)
   const uniqueCampaigns = new Set<string>()
-  
+
   data.forEach(row => {
     if (row.Campaign && row.Campaign.trim() !== '') {
       uniqueCampaigns.add(row.Campaign.trim())
     }
   })
-  
+
   // Convert Set to array of Campaign objects
   const campaigns: Campaign[] = Array.from(uniqueCampaigns)
     .sort() // Alphabetical order
@@ -163,7 +163,7 @@ export function extractCampaigns(data: RawCSVRow[]): Campaign[] {
       id: name,
       name: name
     }))
-  
+
   return campaigns
 }
 

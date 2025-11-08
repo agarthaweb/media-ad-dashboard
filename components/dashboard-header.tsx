@@ -2,8 +2,9 @@
 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Upload, Filter } from "lucide-react"
+import { Upload, Filter, GitCompare } from "lucide-react"
 import { CSVUploadDialog } from "@/components/csv-upload-dialog"
+import { Badge } from "@/components/ui/badge"
 import {
   Select,
   SelectContent,
@@ -11,16 +12,41 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { useDashboardStore } from "@/store/useDashboardStore"
+import { useDashboardStore, useActiveDataset, useCampaigns, useSelectedCampaign, useComparisonMode, useDatasets } from "@/store/useDashboardStore"
 
-export function DashboardHeader() {
+interface DashboardHeaderProps {
+  onUploadClick?: () => void
+}
+
+export function DashboardHeader({ onUploadClick }: DashboardHeaderProps = {}) {
   const [uploadDialogOpen, setUploadDialogOpen] = useState(false)
-  
-  // Get campaigns, selected campaign, and action from store
-  const campaigns = useDashboardStore(state => state.campaigns)
-  const selectedCampaign = useDashboardStore(state => state.selectedCampaign)
-  const selectCampaign = useDashboardStore(state => state.selectCampaign)
-  const hasData = useDashboardStore(state => state.rawCSVData !== null)
+
+  // Get state from store
+  const activeDataset = useActiveDataset()
+  const campaigns = useCampaigns()
+  const selectedCampaign = useSelectedCampaign()
+  const comparisonMode = useComparisonMode()
+  const datasets = useDatasets()
+
+  const selectCampaignForDataset = useDashboardStore(state => state.selectCampaignForDataset)
+  const toggleComparisonMode = useDashboardStore(state => state.toggleComparisonMode)
+
+  const hasData = datasets.length > 0
+  const canCompare = datasets.length >= 2
+
+  const handleUploadClick = () => {
+    if (onUploadClick) {
+      onUploadClick()
+    } else {
+      setUploadDialogOpen(true)
+    }
+  }
+
+  const handleCampaignChange = (campaignId: string) => {
+    if (activeDataset) {
+      selectCampaignForDataset(activeDataset.id, campaignId)
+    }
+  }
 
   return (
     <>
@@ -32,16 +58,23 @@ export function DashboardHeader() {
               <div className="h-8 w-8 rounded bg-primary flex items-center justify-center">
                 <span className="text-primary-foreground font-bold text-sm">MA</span>
               </div>
-              <h1 className="text-xl font-bold text-text-heading hidden sm:block">Media Attribution</h1>
+              <div>
+                <h1 className="text-xl font-bold text-text-heading hidden sm:block">Media Attribution</h1>
+                {comparisonMode && (
+                  <Badge variant="secondary" className="text-xs ml-2">
+                    Comparison Mode
+                  </Badge>
+                )}
+              </div>
             </div>
 
             {/* Campaign Filter & Actions */}
             <div className="flex items-center gap-3">
-              {/* Campaign Filter Dropdown - Only show if data is loaded */}
-              {hasData && campaigns.length > 0 && (
+              {/* Campaign Filter Dropdown - Only show if data is loaded and not in comparison mode */}
+              {hasData && !comparisonMode && campaigns.length > 0 && activeDataset && (
                 <Select
                   value={selectedCampaign || 'all'}
-                  onValueChange={selectCampaign}
+                  onValueChange={handleCampaignChange}
                 >
                   <SelectTrigger className="w-[200px] md:w-[300px]">
                     <Filter className="h-4 w-4 mr-2" />
@@ -56,16 +89,23 @@ export function DashboardHeader() {
                   </SelectContent>
                 </Select>
               )}
-              
-              <Button 
-                variant="outline" 
-                size="sm" 
-                className="hidden sm:flex bg-transparent"
-                disabled={!hasData}
-              >
-                Export
-              </Button>
-              <Button size="sm" className="gap-2" onClick={() => setUploadDialogOpen(true)}>
+
+              {/* Comparison Mode Toggle */}
+              {canCompare && (
+                <Button
+                  variant={comparisonMode ? "default" : "outline"}
+                  size="sm"
+                  onClick={toggleComparisonMode}
+                  className="gap-2"
+                >
+                  <GitCompare className="h-4 w-4" />
+                  <span className="hidden md:inline">
+                    {comparisonMode ? "Exit Compare" : "Compare"}
+                  </span>
+                </Button>
+              )}
+
+              <Button size="sm" className="gap-2" onClick={handleUploadClick}>
                 <Upload className="h-4 w-4" />
                 <span className="hidden sm:inline">Upload CSV</span>
                 <span className="sm:hidden">Upload</span>
@@ -75,7 +115,9 @@ export function DashboardHeader() {
         </div>
       </header>
 
-      <CSVUploadDialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen} />
+      {!onUploadClick && (
+        <CSVUploadDialog open={uploadDialogOpen} onOpenChange={setUploadDialogOpen} />
+      )}
     </>
   )
 }

@@ -18,10 +18,15 @@ const CHART_COLORS = [
 ]
 
 export function DataVisualization() {
-  // Get real data from store
-  const processedData = useDashboardStore(state => state.processedData)
-  const hasData = useDashboardStore(state => state.rawCSVData !== null)
-  
+  // Get real data from store using selector hooks
+  const { processedData, hasData } = useDashboardStore(state => {
+    const activeDataset = state.getActiveDataset()
+    return {
+      processedData: activeDataset?.processedData || [],
+      hasData: state.datasets.length > 0
+    }
+  })
+
   // Get top 10 publishers for charts (table shows 25)
   const topPublishers = processedData.slice(0, 10)
 

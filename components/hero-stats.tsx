@@ -46,18 +46,31 @@ function StatCard({ label, value, subtext, trend, color }: StatCardProps) {
 }
 
 export function HeroStats() {
-  // Get real dashboard stats from store
-  const stats = useDashboardStore(state => state.dashboardStats)
-  const hasData = useDashboardStore(state => state.rawCSVData !== null)
-  const selectedCampaign = useDashboardStore(state => state.selectedCampaign)
-  const campaigns = useDashboardStore(state => state.campaigns)
-  
+  // Get real dashboard stats from store using selector hooks
+  const stats = useDashboardStore(state => {
+    const activeDataset = state.getActiveDataset()
+    return activeDataset?.stats || {
+      totalImpressions: 0,
+      totalSpend: 0,
+      averageCPM: 0
+    }
+  })
+
+  const { hasData, selectedCampaign, campaigns } = useDashboardStore(state => {
+    const activeDataset = state.getActiveDataset()
+    return {
+      hasData: state.datasets.length > 0,
+      selectedCampaign: activeDataset?.selectedCampaign || 'all',
+      campaigns: activeDataset?.campaigns || []
+    }
+  })
+
   // Format the campaign name for display
   const getCampaignSubtext = () => {
     if (!selectedCampaign || selectedCampaign === 'all') {
       return 'across all campaigns'
     }
-    const campaign = campaigns.find(c => c.id === selectedCampaign)
+    const campaign = campaigns.find((c) => c.id === selectedCampaign)
     return campaign ? `for ${campaign.name}` : 'for selected campaign'
   }
   

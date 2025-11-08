@@ -5,6 +5,8 @@ import type React from "react"
 import { useState, useCallback } from "react"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import { Upload, FileText, X, Loader2, AlertCircle, CheckCircle2 } from "lucide-react"
 import { useDashboardStore } from "@/store/useDashboardStore"
 import { validateFileType } from "@/lib/csv-parser"
@@ -17,10 +19,11 @@ interface CSVUploadDialogProps {
 export function CSVUploadDialog({ open, onOpenChange }: CSVUploadDialogProps) {
   const [isDragging, setIsDragging] = useState(false)
   const [file, setFile] = useState<File | null>(null)
+  const [datasetName, setDatasetName] = useState("")
   const [isProcessing, setIsProcessing] = useState(false)
   const [uploadSuccess, setUploadSuccess] = useState(false)
   const [uploadError, setUploadError] = useState<string | null>(null)
-  
+
   // Get upload function from store
   const uploadCSV = useDashboardStore(state => state.uploadCSV)
 
@@ -66,25 +69,29 @@ export function CSVUploadDialog({ open, onOpenChange }: CSVUploadDialogProps) {
   const handleUpload = async () => {
     if (!file) return
 
+    // Use dataset name if provided, otherwise use file name without extension
+    const finalDatasetName = datasetName.trim() || file.name.replace(/\.csv$/i, '')
+
     setIsProcessing(true)
     setUploadError(null)
     setUploadSuccess(false)
-    
+
     try {
-      // THIS IS THE MAGIC! Call the store's uploadCSV function
+      // Call the store's uploadCSV function with file and name
       // It will parse, process, and update all components automatically
-      await uploadCSV(file)
-      
+      await uploadCSV(file, finalDatasetName)
+
       // Success!
       setUploadSuccess(true)
       setFile(null)
-      
+      setDatasetName("")
+
       // Close dialog after a brief success message
       setTimeout(() => {
         onOpenChange(false)
         setUploadSuccess(false)
       }, 1500)
-      
+
     } catch (error) {
       // Handle any errors
       setUploadError(error instanceof Error ? error.message : 'Failed to upload file')
@@ -129,18 +136,36 @@ export function CSVUploadDialog({ open, onOpenChange }: CSVUploadDialogProps) {
               </label>
             </div>
           ) : (
-            <div className="border border-border rounded-lg p-4 bg-muted/50">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <FileText className="h-8 w-8 text-primary" />
-                  <div>
-                    <p className="text-sm font-medium text-foreground">{file.name}</p>
-                    <p className="text-xs text-muted-foreground">{(file.size / 1024).toFixed(2)} KB</p>
+            <div className="space-y-4">
+              <div className="border border-border rounded-lg p-4 bg-muted/50">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <FileText className="h-8 w-8 text-primary" />
+                    <div>
+                      <p className="text-sm font-medium text-foreground">{file.name}</p>
+                      <p className="text-xs text-muted-foreground">{(file.size / 1024).toFixed(2)} KB</p>
+                    </div>
                   </div>
+                  <Button variant="ghost" size="icon" onClick={handleRemoveFile} disabled={isProcessing}>
+                    <X className="h-4 w-4" />
+                  </Button>
                 </div>
-                <Button variant="ghost" size="icon" onClick={handleRemoveFile} disabled={isProcessing}>
-                  <X className="h-4 w-4" />
-                </Button>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="dataset-name">Dataset Name</Label>
+                <Input
+                  id="dataset-name"
+                  type="text"
+                  placeholder="e.g., January 2024, Q1 Data"
+                  value={datasetName}
+                  onChange={(e) => setDatasetName(e.target.value)}
+                  disabled={isProcessing}
+                  className="w-full"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Optional: Give this dataset a meaningful name for comparison. Defaults to file name.
+                </p>
               </div>
             </div>
           )}

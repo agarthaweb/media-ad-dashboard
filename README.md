@@ -1,6 +1,6 @@
 # Media Attribution Dashboard - Installation & Testing Guide
 
-## 🎉 What We Built
+## 🎉 What Was Built
 
 A fully functional media attribution dashboard that:
 - ✅ Parses real CSV files from The Trade Desk
@@ -16,10 +16,7 @@ A fully functional media attribution dashboard that:
 
 ## 📦 Installation Instructions
 
-### 1. You have the dashboard files!
-This is the complete working dashboard.
-
-### 2. Install dependencies
+### 1. Install dependencies
 
 ```bash
 # Using pnpm (recommended - faster)
@@ -31,7 +28,7 @@ npm install
 
 **Expected install time:** 2-3 minutes
 
-### 3. Start the development server
+### 2. Start the development server
 
 ```bash
 # Using pnpm
@@ -63,9 +60,9 @@ What you should see:
 
 1. **Click "Upload CSV"** button in top right
 2. **Dialog opens** - You should see upload area
-3. **Drag & drop** the `Lawrence_CTD_TTD_InventoryPerf.csv` file
+3. **Drag & drop** the `example_data.csv` file
    - Or click to browse and select file
-4. **File appears** with name and size (e.g., "Lawrence_CTD_TTD_InventoryPerf.csv - 82.34 KB")
+4. **File appears** with name and size (e.g., "example_data.csv - 82.34 KB")
 5. **Click "Upload"** button
 6. **Watch the magic:**
    - Shows "Processing CSV..." with spinner
@@ -169,7 +166,7 @@ Click each column header to test sorting:
 Let's make sure the calculations are accurate!
 
 **Quick spot check:**
-1. Open `Lawrence_CTD_TTD_InventoryPerf.csv` in Excel or Google Sheets
+1. Open `example_data.csv` in Excel or Google Sheets
 2. Filter to show only "Hulu" rows
 3. **Manually calculate:**
    - Sum all Hulu impressions
@@ -360,7 +357,7 @@ The dashboard CPM is more accurate for overall publisher performance because it'
 
 ## 🚀 What's Next? (Future v2 Features)
 
-What we **didn't** build (but could in v2):
+What was built (but could in v2):
 
 ### Not in v1:
 - ❌ Date range filtering (CSV doesn't have date columns)
@@ -379,65 +376,6 @@ This codebase is **perfectly structured** for API integration:
 - State management (Zustand) stays the same
 - All components already reactive
 - Easy to add date filtering when data includes dates
-
----
-
-## 📁 What Changed From Designer's Mockup
-
-### Files We Created (NEW):
-```
-lib/
-├── types.ts              # TypeScript interfaces for all data structures
-├── csv-parser.ts         # CSV reading and validation logic
-└── data-processor.ts     # Publisher aggregation and calculations
-
-store/
-└── useDashboardStore.ts  # Zustand state management (the brain!)
-
-README.md                 # This file!
-```
-
-### Files We Modified:
-```
-components/
-├── csv-upload-dialog.tsx     # Added real upload functionality
-├── dashboard-header.tsx      # Added campaign filter dropdown
-├── hero-stats.tsx            # Connected to real data from store
-├── data-visualization.tsx    # Connected charts to real data
-└── publisher-table.tsx       # Connected table to real data
-
-package.json                  # Added: papaparse, zustand, @types/papaparse
-```
-
-### Files We Didn't Touch:
-```
-- All UI components (shadcn/ui) ✅
-- Layout and styling ✅
-- Next.js configuration ✅
-```
-
----
-
-## 💡 Technical Decisions Explained
-
-### Why Zustand instead of Redux?
-- **Simpler:** No actions, reducers, boilerplate
-- **Faster:** Less code to write and maintain
-- **TypeScript-friendly:** Great TS support out of the box
-- **Scalable:** Perfect for medium apps, works for large apps too
-- **Learning curve:** 10 minutes vs hours for Redux
-
-### Why PapaParse for CSV?
-- **Battle-tested:** Used by millions of projects
-- **Robust:** Handles edge cases (quotes, commas in data, line breaks)
-- **Fast:** Parses 700 rows in <1 second
-- **Easy:** Simple API, works client-side
-
-### Why Next.js 16?
-- **Your designer chose it!** We kept the tech stack
-- **Fast:** Server components, optimizations built-in
-- **Scalable:** Easy to add API routes when you need them
-- **Popular:** Huge ecosystem, easy to hire for
 
 ---
 
@@ -493,7 +431,7 @@ If something doesn't work:
 ## ✅ Success Criteria
 
 You know it's working when:
-- ✅ Can upload `Lawrence_CTD_TTD_InventoryPerf.csv`
+- ✅ Can upload `media_ad_buys.csv`
 - ✅ See real numbers in all 3 hero cards
 - ✅ See charts with your publisher names
 - ✅ See table with 15+ publishers
